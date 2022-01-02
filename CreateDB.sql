@@ -34,7 +34,7 @@ IF OBJECT_ID(N'dbo.Cards', N'U') IS NULL
 BEGIN   
 	PRINT 'Creating table Cards'
 	CREATE TABLE Cards (
-		CardKey UNIQUEIDENTIFIER  NOT NULL PRIMARY KEY DEFAULT newsequentialid(),
+		CardKey UNIQUEIDENTIFIER  PRIMARY KEY DEFAULT newsequentialid(),
 		Id INT NOT NULL,
 		[Name] NVARCHAR(128) NOT NULL,
 		Color NVARCHAR(36) NOT NULL,
