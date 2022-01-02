@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
-using SplinterLandsAPI.Models;
-using System;
-using System.Collections.Generic;
+using SplinterLands.DTOs.Models;
 using System.Data;
-using System.Linq;
 using System.Data.SqlClient;
 
 namespace SplinterLandsDB
