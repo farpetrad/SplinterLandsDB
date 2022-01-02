@@ -1,6 +1,10 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
 using SplinterLandsAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Data.SqlClient;
 
 namespace SplinterLandsDB
@@ -111,11 +115,67 @@ namespace SplinterLandsDB
 
         public Card GetCardById(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0) throw new ArgumentException("Provided Id must be > 0", nameof(id));
+
+            using(var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                const string selectCardTypeSql = "SELECT Type FROM Cards WITH(NOLOCK) WHERE Id=@Id";
+                var cardType = connection.QuerySingle<string>(selectCardTypeSql, new { Id = id });
+
+
+
+                if (string.IsNullOrEmpty(cardType)) throw new Exception("Error in GetCardById, no card found with specified id");
+
+                switch (cardType.ToLower())
+                {
+                    case "summoner":
+                        return GetSummonerById(id, connection);
+                    case "monster":
+                        return GetMonsterById(id, connection);
+                    default:
+                        throw new Exception($"No card type of {cardType} was found");
+                }
+            }
+            
+        }
+
+        private Card GetSummonerById(int cardId, IDbConnection connection)
+        {
+            const string sql = $@"SELECT * FROM Cards WITH(NOLOCK)
+                                  INNER JOIN SummonerStats ST WITH(NOLOCK)
+                                   ON ST.CardKey = Cards.CardKey
+                                WHERE Id=@Id";
+            var card = connection.Query<
+                Card, CardStats, Card>(sql, (card, stats) =>
+                {
+                    card.Stats = stats;
+                    return card;
+                }, new { Id = cardId }).FirstOrDefault() ?? new Card();
+            return card;
+        }
+
+        private Card GetMonsterById(int cardId, IDbConnection connection)
+        {
+            const string sql = $@"SELECT * FROM Cards WITH(NOLOCK)
+                                  INNER JOIN MonsterStats MT WITH(NOLOCK)
+                                   ON MT.CardKey = Cards.CardKey
+                                WHERE Id=@Id";
+
+            var card = connection.Query<
+                Card, CardStats, Card>(sql, (card, stats) =>
+                {
+                    card.Stats = stats;
+                    return card;
+                }, new { Id = cardId }).FirstOrDefault() ?? new Card();
+            
+
+            return card;
         }
 
         public Card GetCardByName(string name)
         {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Provided name must be valid and have length > 0", nameof(name));
             throw new NotImplementedException();
         }
 
