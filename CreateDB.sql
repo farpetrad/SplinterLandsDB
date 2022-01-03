@@ -103,5 +103,94 @@ ALTER TABLE MonsterStats
 	ADD CONSTRAINT FK_MSCardId FOREIGN KEY (CardKey) REFERENCES Cards(CardKey);
 GO
 
+
+IF OBJECT_ID(N'dbo.Battle', N'U') IS NULL 
+BEGIN
+	CREATE TABLE Battle (
+		PlayerBattleKey UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT newsequentialid(),
+		Battle_queue_id_1 NVARCHAR(1024) NOT NULL,
+		Battle_queue_id_2 NVARCHAR(1024) NOT NULL,
+		Player_1 NVARCHAR(512) NOT NULL,
+		Player_2 NVARCHAR(512) NOT NULL,
+		Winner NVARCHAR(512) NOT NULL,
+		Player_1_rating_initial INT NOT NULL,
+		Player_2_rating_initial INT NOT NULL,
+		Player_1_rating_final INT NOT NULL,
+		Player_2_rating_final INT NOT NULL,
+		Created_Date DATETIME,
+		Match_Type NVARCHAR(1024) NOT NULL,
+		Mana_Cap INT NOT NULL,
+		Inactive NVARCHAR(1024) NOT NULL,
+		Block_Num BIGINT NOT NULL,
+		Rshares BIGINT NOT NULL,
+		Leaderboard BIGINT NOT NULL,
+		Reward_Dec NVARCHAR(32),
+		Reward_Sps NVARCHAR(32)
+		
+	);
+END
+GO
+
+IF OBJECT_ID(N'dbo.BattleDetails', N'U') IS NULL 
+BEGIN
+	CREATE TABLE BattleDetails (
+		BattleDetailsKey UNIQUEIDENTIFIER PRIMARY KEY DEFAULT newsequentialid(),
+		PlayerBattleKey UNIQUEIDENTIFIER NOT NULL ,
+		Seed NVARCHAR(1024) NOT NULL,
+		Winner NVARCHAR(1024) NOT NULL,
+		Loser NVARCHAR(1024) NOT NULL
+	);
+END
+GO
+
+IF OBJECT_ID('dbo.[FK_BattleDetails_Battle]') IS NOT NULL
+	BEGIN
+		PRINT 'Constraint FK_BattleDetails_Battle exists, removing to add'
+		ALTER TABLE dbo.BattleDetails DROP CONSTRAINT FK_BattleDetails_Battle
+	END
+GO
+
+ALTER TABLE BattleDetails
+	ADD CONSTRAINT FK_BattleDetails_Battle FOREIGN KEY (PlayerBattleKey) REFERENCES Battle(PlayerBattleKey);
+GO
+
+IF OBJECT_ID(N'dbo.Team', N'U') IS NULL 
+BEGIN
+	CREATE TABLE Team (
+		TeamKey UNIQUEIDENTIFIER PRIMARY KEY DEFAULT newsequentialid(),
+		Player NVARCHAR(1024) NOT NULL,
+		Rating BIGINT NOT NULL,
+		Color NVARCHAR(36)
+	);
+END
+GO
+
+IF OBJECT_ID(N'dbo.BattleCard', N'U') IS NULL 
+BEGIN
+	CREATE TABLE BattleCard (
+		BattleCardKey UNIQUEIDENTIFIER PRIMARY KEY DEFAULT newsequentialid(),
+		TeamKey UNIQUEIDENTIFIER NOT NULL,
+		Uid NVARCHAR(1024) NOT NULL,
+		Xp INT NOT NULL,
+		Gold BIT NOT NULL,
+		Card_Detail_Id BIGINT NOT NULL,
+		Level INT NOT NULL,
+		Edition INT NOT NULL,
+		Skin NVARCHAR(1024)
+	);
+END
+GO
+
+IF OBJECT_ID('dbo.[FK_BattleCard_Team]') IS NOT NULL
+	BEGIN
+		PRINT 'Constraint FK_BattleCard_Team exists, removing to add'
+		ALTER TABLE dbo.BattleCard DROP CONSTRAINT FK_BattleCard_Team
+	END
+GO
+
+ALTER TABLE BattleCard
+	ADD CONSTRAINT FK_BattleCard_Team FOREIGN KEY (TeamKey) REFERENCES Team(TeamKey);
+GO
+
 GRANT SELECT, INSERT ON DATABASE::[Splinterlands] to  [SplinterlandsReader]
 GO
