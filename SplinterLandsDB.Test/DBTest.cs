@@ -74,7 +74,7 @@ namespace SplinterLandsDB.Test
                 }.ConnectionString
             };
 
-            var monster = db.GetCardById(442);
+            var monster = db.GetCardById(236);
             Assert.IsNotNull(monster);
         }
     }

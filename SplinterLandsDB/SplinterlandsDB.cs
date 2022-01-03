@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
-using SplinterLands.DTOs.Models;
+using SplinterLandsDB.DTOs;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -15,7 +15,7 @@ namespace SplinterLandsDB
         }
         public string ConnectionString { get; set; } = string.Empty;
 
-        public void AddCard(Card card)
+        public void AddCard(SplinterLands.DTOs.Models.Card card)
         {
             try
             {
@@ -51,8 +51,10 @@ namespace SplinterLandsDB
             }
         }
 
-        private static Guid InsertCardethod(Card card, SqlConnection connection, SqlTransaction transaction)
+        private static Guid InsertCardethod(SplinterLands.DTOs.Models.Card card, SqlConnection connection, SqlTransaction transaction)
         {
+            if(DoesCcardExist(card.Id, connection)) return Guid.Empty;
+
             const string sql = @$"INSERT INTO Cards(Id, Name, Color, Type, Total_Printed, Rarity, Is_Promo, Is_Starter)
                                         OUTPUT INSERTED.CardKey
                                         VALUES(@Id, @Name, @Color, @Type, @Total_Printed, @Rarity, @Is_Promo, @Is_Starter)";
@@ -74,7 +76,7 @@ namespace SplinterLandsDB
 
             return insertedId;
         }
-        private static void InsertSummonerStats(CardStats stats, Guid cardKey, SqlConnection connection, SqlTransaction transaction)
+        private static void InsertSummonerStats(SplinterLands.DTOs.Models.CardStats stats, Guid cardKey, SqlConnection connection, SqlTransaction transaction)
         {
             const string sql = $@"INSERT INTO SummonerStats (CardKey, Armor, Attack, Health, Magic, Mana, Ranged, Speed, Abilities)
                                           VALUES(@CardKey, @Armor, @Attack, @Health, @Magic, @Mana, @Ranged, @Speed, @Abilities)";
@@ -91,7 +93,7 @@ namespace SplinterLandsDB
             }, transaction);
         }
 
-        private static void InsertMonsterStats(CardStats stats, Guid cardKey, SqlConnection connection, SqlTransaction transaction)
+        private static void InsertMonsterStats(SplinterLands.DTOs.Models.CardStats stats, Guid cardKey, SqlConnection connection, SqlTransaction transaction)
         {
             const string sql = $@"INSERT INTO MonsterStats (CardKey, Armor, Attack, Health, Magic, Mana, Ranged, Speed, Abilities)
                                           VALUES(@CardKey, @Armor, @Attack, @Health, @Magic, @Mana, @Ranged, @Speed, @Abilities)";
@@ -137,6 +139,14 @@ namespace SplinterLandsDB
             
         }
 
+        private static bool DoesCcardExist(int id, IDbConnection connection)
+        {
+            connection.Open();
+            const string selectCardTypeSql = "SELECT COUNT(*) FROM Cards WITH(NOLOCK) WHERE Id=@Id";
+            var count = connection.QuerySingle<int>(selectCardTypeSql, new { Id = id });
+            return count > 0;
+        }
+
         private Card GetSummonerById(int cardId, IDbConnection connection)
         {
             const string sql = $@"SELECT * FROM Cards WITH(NOLOCK)
@@ -144,7 +154,7 @@ namespace SplinterLandsDB
                                    ON ST.CardKey = Cards.CardKey
                                 WHERE Id=@Id";
             var card = connection.Query<
-                Card, CardStats, Card>(sql, (card, stats) =>
+                Card, SummonerStats, Card>(sql, (card, stats) =>
                 {
                     card.Stats = stats;
                     return card;
@@ -160,7 +170,7 @@ namespace SplinterLandsDB
                                 WHERE Id=@Id";
 
             var card = connection.Query<
-                Card, CardStats, Card>(sql, (card, stats) =>
+                Card, MonsterStats, Card>(sql, (card, stats) =>
                 {
                     card.Stats = stats;
                     return card;

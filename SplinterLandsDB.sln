@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplinterLandsDB", "SplinterLandsDB\SplinterLandsDB.csproj", "{FD32E785-881F-4404-8A09-8E686BE9F5B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SplinterLandsDB", "SplinterLandsDB\SplinterLandsDB.csproj", "{FD32E785-881F-4404-8A09-8E686BE9F5B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplinterLandsDB.Test", "SplinterLandsDB.Test\SplinterLandsDB.Test.csproj", "{1E363941-AB24-4A5D-A404-E7E59977A503}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SplinterLandsDB.Test", "SplinterLandsDB.Test\SplinterLandsDB.Test.csproj", "{1E363941-AB24-4A5D-A404-E7E59977A503}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplinterLandsDB.DTOs", "SplinterLandsDB.DTOs\SplinterLandsDB.DTOs.csproj", "{587C3AA5-C15E-40BB-8FC6-7E67AD5E05B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1E363941-AB24-4A5D-A404-E7E59977A503}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E363941-AB24-4A5D-A404-E7E59977A503}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E363941-AB24-4A5D-A404-E7E59977A503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{587C3AA5-C15E-40BB-8FC6-7E67AD5E05B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{587C3AA5-C15E-40BB-8FC6-7E67AD5E05B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{587C3AA5-C15E-40BB-8FC6-7E67AD5E05B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{587C3AA5-C15E-40BB-8FC6-7E67AD5E05B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
